@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/josh-weston/advent-of-code-2022/day3/part1"
+	"github.com/josh-weston/advent-of-code-2022/day3/part2"
 )
 
 func main() {
@@ -13,6 +13,6 @@ func main() {
 		panic(err)
 	}
 
-	score := part1.Run(f)
+	score := part2.Run(f)
 	fmt.Printf("Your total score is %d\n", score)
 }
