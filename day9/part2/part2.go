@@ -117,7 +117,12 @@ func Run(input io.Reader) int {
 	// both start at the origin
 	start := Coords{x: 0, y: 0}
 	H := Head{Coords: start}
-	T := Tail{Coords: start, Visited: map[string]bool{"0,0": true}} // our starting coordinates
+
+	numFollowers := 9
+	followers := make([]Tail, numFollowers)
+	for i := 0; i < numFollowers; i++ {
+		followers[i] = Tail{Coords: start, Visited: map[string]bool{"0,0": true}}
+	}
 
 	for scanner.Scan() {
 		if scanner.Err() != nil {
@@ -134,12 +139,17 @@ func Run(input io.Reader) int {
 
 		for i := 0; i < int(units); i++ {
 			H.Move(ins, 1)
-			T.Follow(H.x, H.y)
+
+			// This is like a pipeline
+			followers[0].Follow(H.x, H.y)
+			for i := 1; i < len(followers); i++ {
+				followers[i].Follow(followers[i-1].x, followers[i-1].y)
+			}
 		}
 
 		if err != nil {
 			panic(err)
 		}
 	}
-	return len(T.Visited)
+	return len(followers[len(followers)-1].Visited)
 }
