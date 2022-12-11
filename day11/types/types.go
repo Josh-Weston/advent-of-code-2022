@@ -5,7 +5,6 @@ import (
 	"math"
 	"math/big"
 	"sort"
-	"sync"
 )
 
 type MonkeyOrchestrator struct {
@@ -36,8 +35,8 @@ func (m *MonkeyOrchestrator) Begin(rounds int) {
 
 func (m *MonkeyOrchestrator) Score() int {
 
-	sort.Sort(sort.Reverse(sort.IntSlice(m.Inspected)))
 	fmt.Println(m.Inspected)
+	sort.Sort(sort.Reverse(sort.IntSlice(m.Inspected)))
 	return m.Inspected[0] * m.Inspected[1]
 }
 
@@ -54,23 +53,35 @@ func (m *MonkeyOrchestrator2) Begin(rounds int) {
 		// for each monkey
 		for i, items := range m.Items {
 
-			var wg sync.WaitGroup
-			wg.Add(len(items))
-			// go through their items and toss them as needed
-			for _, value := range items {
+			/*
+				var wg sync.WaitGroup
+				wg.Add(len(items))
+				// go through their items and toss them as needed
+				for _, value := range items {
+					m.Inspected[i]++
+					go func(v *big.Int) {
+						defer wg.Done()
+						worry := m.Operations[i](v)
+						to := m.Tests[i](worry)
+						// TODO: yes, I need to make this thread safe (which may or may not be the cause of my problem)
+						// TODO: this takes a really longtime to run in general (even with threading)
+						m.Items[to] = append(m.Items[to], worry) // does this need to be thread safe?
+					}(value)
+				}
+				// reset our worry after every round, for those items?
+				wg.Wait()
+				m.Items[i] = []*big.Int{} // empty the list when finished
+			*/
+			for _, v := range items {
 				m.Inspected[i]++
-				go func(v *big.Int) {
-					defer wg.Done()
-					worry := m.Operations[i](v)
-					to := m.Tests[i](worry)
-					// TODO: yes, I need to make this thread safe (which may or may not be the cause of my problem)
-					// TODO: this takes a really longtime to run in general (even with threading)
-					m.Items[to] = append(m.Items[to], worry) // does this need to be thread safe?
-				}(value)
+				worry := m.Operations[i](v)
+				to := m.Tests[i](worry)
+				// TODO: yes, I need to make this thread safe (which may or may not be the cause of my problem)
+				// TODO: this takes a really longtime to run in general (even with threading)
+				m.Items[to] = append(m.Items[to], worry) // does this need to be thread safe?
 			}
-			// reset our worry after every round, for those items?
-			wg.Wait()
 			m.Items[i] = []*big.Int{} // empty the list when finished
+
 		}
 	}
 }
@@ -79,8 +90,8 @@ func (m *MonkeyOrchestrator2) Begin(rounds int) {
 
 func (m *MonkeyOrchestrator2) Score() int {
 
-	sort.Sort(sort.Reverse(sort.IntSlice(m.Inspected)))
 	fmt.Println(m.Inspected)
+	sort.Sort(sort.Reverse(sort.IntSlice(m.Inspected)))
 	return m.Inspected[0] * m.Inspected[1]
 }
 
@@ -136,3 +147,45 @@ func (m *MonkeyOrchestrator3) Score() int {
 // THOUGHTS: we need to keep our worry in check (e.g, within a reasonable range)
 // THOUGHTS: will this involve some math?
 // All I can think is if the worry level is evenly divisble, we just use that new divisble number
+
+type MonkeyOrchestrator2C struct {
+	Items      [][]int
+	Inspected  []int
+	Operations []func(v int) int
+	Tests      []func(v int) int
+}
+
+func (m *MonkeyOrchestrator2C) Begin(rounds int) {
+	// for each round
+	for r := 0; r < rounds; r++ {
+		// for each monkey
+		for i, items := range m.Items {
+			// go through their items and toss them as needed
+			for _, v := range items {
+				m.Inspected[i]++
+				// worry := int(math.Floor(math.Sqrt(float64(m.Operations[i](v)))))
+				worry := m.Operations[i](v)
+				// this was a good idea, but it doesn't work
+				// if worry%96577 == 0 {
+				// 	fmt.Println("here")
+				// worry = worry % 96577 // for tests
+				worry = worry % 9_699_690
+				// }
+				// if worry%12 == 0 {
+				// 	worry = worry / 12
+				// }
+				// worry := int(math.Floor(float64(m.Operations[i](v)) / 4))
+				to := m.Tests[i](worry)
+				m.Items[to] = append(m.Items[to], worry)
+			}
+			m.Items[i] = []int{} // empty the list when finished
+		}
+	}
+}
+
+func (m *MonkeyOrchestrator2C) Score() int {
+
+	fmt.Println(m.Inspected)
+	sort.Sort(sort.Reverse(sort.IntSlice(m.Inspected)))
+	return m.Inspected[0] * m.Inspected[1]
+}

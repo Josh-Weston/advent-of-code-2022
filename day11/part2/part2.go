@@ -22,3 +22,8 @@ func RunOrc2(orchestrator types.MonkeyOrchestrator3, rounds int) int {
 	orchestrator.Begin(rounds)
 	return orchestrator.Score()
 }
+
+func Run2C(orchestrator types.MonkeyOrchestrator2C, rounds int) int {
+	orchestrator.Begin(rounds)
+	return orchestrator.Score()
+}

@@ -63,7 +63,7 @@ func TestPart1(t *testing.T) {
 		},
 	}
 
-	result := part1.Run(orchestrator, 20)
+	result := part1.Run(orchestrator, 2)
 	expected := 10605
 
 	if result != expected {
@@ -146,7 +146,7 @@ func TestPart2(t *testing.T) {
 	}
 
 	// Problem: the numbers keep growing at a crazy rate!
-	result := part2.Run(orchestrator, 2000)
+	result := part2.Run(orchestrator, 1000)
 	expected := 2713310158
 	if result != expected {
 		t.Fatalf("invalid result. got=%d, want=%d\n", result, expected)
@@ -215,6 +215,70 @@ func TestPart3(t *testing.T) {
 
 	result := part2.RunOrc2(orchestrator, 20)
 	expected := 10605
+
+	if result != expected {
+		t.Fatalf("invalid result. got=%d, want=%d\n", result, expected)
+	}
+
+}
+
+// The trick to this is modulos arithmetic, do the modulous of the lowest common number (and since these are all prime numbers the LCM is their product)
+func TestPart2C(t *testing.T) {
+
+	var orchestrator types.MonkeyOrchestrator2C
+	orchestrator.Items = [][]int{
+		{79, 98},
+		{54, 65, 75, 74},
+		{79, 60, 97},
+		{74},
+	}
+
+	orchestrator.Inspected = []int{0, 0, 0, 0}
+
+	orchestrator.Operations = []func(i int) int{
+		func(v int) int {
+			return v * 19
+		},
+		func(v int) int {
+			return v + 6
+		},
+		func(v int) int {
+			return v * v
+		},
+		func(v int) int {
+			return v + 3
+		},
+	}
+
+	orchestrator.Tests = []func(i int) int{
+		func(v int) int {
+			if v%23 == 0 {
+				return 2
+			}
+			return 3
+		},
+		func(v int) int {
+			if v%19 == 0 {
+				return 2
+			}
+			return 0
+		},
+		func(v int) int {
+			if v%13 == 0 {
+				return 1
+			}
+			return 3
+		},
+		func(v int) int {
+			if v%17 == 0 {
+				return 0
+			}
+			return 1
+		},
+	}
+
+	result := part2.Run2C(orchestrator, 10000)
+	expected := 2713310158
 
 	if result != expected {
 		t.Fatalf("invalid result. got=%d, want=%d\n", result, expected)

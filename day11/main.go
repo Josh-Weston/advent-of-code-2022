@@ -3,12 +3,13 @@ package main
 import (
 	"fmt"
 
-	"github.com/josh-weston/advent-of-code-2022/day11/part1"
+	// "github.com/josh-weston/advent-of-code-2022/day11/part1"
+	"github.com/josh-weston/advent-of-code-2022/day11/part2"
 	"github.com/josh-weston/advent-of-code-2022/day11/types"
 )
 
 func main() {
-	var orchestrator types.MonkeyOrchestrator
+	var orchestrator types.MonkeyOrchestrator2C
 	orchestrator.Items = [][]int{
 		{98, 89, 52},
 		{57, 95, 80, 92, 57, 78},
@@ -100,6 +101,6 @@ func main() {
 		},
 	}
 
-	result := part1.Run(orchestrator, 20)
+	result := part2.Run2C(orchestrator, 10_000)
 	fmt.Printf("The result is %d\n", result)
 }
