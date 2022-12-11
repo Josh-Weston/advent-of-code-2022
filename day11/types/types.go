@@ -143,11 +143,6 @@ func (m *MonkeyOrchestrator3) Score() int {
 	return m.Inspected[0] * m.Inspected[1]
 }
 
-// THOUGHTS: Using BigInt works, but it is unreasonable
-// THOUGHTS: we need to keep our worry in check (e.g, within a reasonable range)
-// THOUGHTS: will this involve some math?
-// All I can think is if the worry level is evenly divisble, we just use that new divisble number
-
 type MonkeyOrchestrator2C struct {
 	Items      [][]int
 	Inspected  []int
@@ -169,7 +164,7 @@ func (m *MonkeyOrchestrator2C) Begin(rounds int) {
 				// if worry%96577 == 0 {
 				// 	fmt.Println("here")
 				// worry = worry % 96577 // for tests
-				worry = worry % 9_699_690
+				worry = worry % 9_699_690 // the LCM of the prime number tests
 				// }
 				// if worry%12 == 0 {
 				// 	worry = worry / 12
