@@ -77,6 +77,9 @@ func TestPart1(t *testing.T) {
 
 func TestPart2(t *testing.T) {
 
+	// This can't be the right way to do this. It is blowing through my memory and taking an insane amount of time to run
+	// There must be a trick!
+
 	var orchestrator types.MonkeyOrchestrator2
 	orchestrator.Items = [][]*big.Int{
 		{big.NewInt(79), big.NewInt(98)},
@@ -85,7 +88,7 @@ func TestPart2(t *testing.T) {
 		{big.NewInt(74)},
 	}
 
-	orchestrator.Inspected = []int{0, 0, 0, 0}
+	orchestrator.Inspected = make([]int, len(orchestrator.Items))
 
 	orchestrator.Operations = []func(v *big.Int) *big.Int{
 		func(v *big.Int) *big.Int {
@@ -142,7 +145,8 @@ func TestPart2(t *testing.T) {
 		},
 	}
 
-	result := part2.Run(orchestrator, 20)
+	// Problem: the numbers keep growing at a crazy rate!
+	result := part2.Run(orchestrator, 2000)
 	expected := 2713310158
 	if result != expected {
 		t.Fatalf("invalid result. got=%d, want=%d\n", result, expected)
@@ -151,3 +155,69 @@ func TestPart2(t *testing.T) {
 }
 
 // the problem here is it is overflowing our integer type (need to use big int?)
+func TestPart3(t *testing.T) {
+
+	var orchestrator types.MonkeyOrchestrator3
+	orchestrator.Items = [][]*types.Item{
+		{&types.Item{Original: 79, Worry: 79}, &types.Item{Original: 98, Worry: 98}},
+		{&types.Item{Original: 54, Worry: 54}, &types.Item{Original: 65, Worry: 65}, &types.Item{Original: 75, Worry: 75}, &types.Item{Original: 74, Worry: 74}},
+		{&types.Item{Original: 79, Worry: 79}, &types.Item{Original: 60, Worry: 60}, &types.Item{Original: 97, Worry: 97}},
+		{&types.Item{Original: 74, Worry: 74}},
+	}
+
+	orchestrator.Inspected = []int{0, 0, 0, 0}
+
+	orchestrator.Operations = []func(v *types.Item) int{
+		func(v *types.Item) int {
+			v.Worry = v.Worry * 19
+			return v.Worry
+		},
+		func(v *types.Item) int {
+			v.Worry = v.Worry + 6
+			return v.Worry
+		},
+		func(v *types.Item) int {
+			v.Worry = v.Worry * v.Worry
+			return v.Worry
+		},
+		func(v *types.Item) int {
+			v.Worry = v.Worry + 3
+			return v.Worry
+		},
+	}
+
+	orchestrator.Tests = []func(i int) int{
+		func(v int) int {
+			if v%23 == 0 {
+				return 2
+			}
+			return 3
+		},
+		func(v int) int {
+			if v%19 == 0 {
+				return 2
+			}
+			return 0
+		},
+		func(v int) int {
+			if v%13 == 0 {
+				return 1
+			}
+			return 3
+		},
+		func(v int) int {
+			if v%17 == 0 {
+				return 0
+			}
+			return 1
+		},
+	}
+
+	result := part2.RunOrc2(orchestrator, 20)
+	expected := 10605
+
+	if result != expected {
+		t.Fatalf("invalid result. got=%d, want=%d\n", result, expected)
+	}
+
+}

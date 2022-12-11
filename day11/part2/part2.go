@@ -17,3 +17,8 @@ func Run(orchestrator types.MonkeyOrchestrator2, rounds int) int {
 	orchestrator.Begin(rounds)
 	return orchestrator.Score()
 }
+
+func RunOrc2(orchestrator types.MonkeyOrchestrator3, rounds int) int {
+	orchestrator.Begin(rounds)
+	return orchestrator.Score()
+}
