@@ -5,6 +5,7 @@ import (
 	"math"
 	"math/big"
 	"sort"
+	"sync"
 )
 
 type MonkeyOrchestrator struct {
@@ -52,15 +53,22 @@ func (m *MonkeyOrchestrator2) Begin(rounds int) {
 	for r := 0; r < rounds; r++ {
 		// for each monkey
 		for i, items := range m.Items {
+
+			var wg sync.WaitGroup
+			wg.Add(len(items))
 			// go through their items and toss them as needed
-			for _, v := range items {
+			for _, value := range items {
 				m.Inspected[i]++
-				worry := m.Operations[i](v)
-				// fmt.Println(worry)
-				to := m.Tests[i](worry)
-				// fmt.Println(to)
-				m.Items[to] = append(m.Items[to], worry)
+				go func(v *big.Int) {
+					defer wg.Done()
+					worry := m.Operations[i](v)
+					// fmt.Println(worry)
+					to := m.Tests[i](worry)
+					// fmt.Println(to)
+					m.Items[to] = append(m.Items[to], worry)
+				}(value)
 			}
+			wg.Wait()
 			m.Items[i] = []*big.Int{} // empty the list when finished
 		}
 	}

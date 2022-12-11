@@ -72,6 +72,9 @@ func TestPart1(t *testing.T) {
 
 }
 
+// I can't tell if I am meant to use bigInt
+// or use a different formula?
+
 func TestPart2(t *testing.T) {
 
 	var orchestrator types.MonkeyOrchestrator2
@@ -101,32 +104,37 @@ func TestPart2(t *testing.T) {
 
 	orchestrator.Tests = []func(v *big.Int) int{
 		func(v *big.Int) int {
+			clone := new(big.Int)
 			mod := new(big.Int)
-			v.DivMod(v, big.NewInt(23), mod)
+			clone.DivMod(v, big.NewInt(23), mod)
 			if mod.Cmp(big.NewInt(0)) == 0 {
 				return 2
 			}
 			return 3
 		},
 		func(v *big.Int) int {
+			clone := new(big.Int)
 			mod := new(big.Int)
-			v.DivMod(v, big.NewInt(19), mod)
+			clone.DivMod(v, big.NewInt(19), mod)
 			if mod.Cmp(big.NewInt(0)) == 0 {
 				return 2
 			}
 			return 0
 		},
 		func(v *big.Int) int {
+			clone := new(big.Int)
 			mod := new(big.Int)
-			v.DivMod(v, big.NewInt(13), mod)
+			clone.DivMod(v, big.NewInt(13), mod)
 			if mod.Cmp(big.NewInt(0)) == 0 {
 				return 1
 			}
 			return 3
 		},
 		func(v *big.Int) int {
+			clone := new(big.Int)
 			mod := new(big.Int)
-			v.DivMod(v, big.NewInt(17), mod)
+			//DivMod sets z to the quotient x div y and m to the modulus x mod y and returns the pair (z, m) for y != 0. If y == 0, a division-by-zero run-time panic occurs.
+			clone.DivMod(v, big.NewInt(17), mod)
 			if mod.Cmp(big.NewInt(0)) == 0 {
 				return 0
 			}
@@ -134,7 +142,7 @@ func TestPart2(t *testing.T) {
 		},
 	}
 
-	result := part2.Run(orchestrator, 1)
+	result := part2.Run(orchestrator, 20)
 	expected := 2713310158
 	if result != expected {
 		t.Fatalf("invalid result. got=%d, want=%d\n", result, expected)
