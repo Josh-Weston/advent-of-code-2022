@@ -28,18 +28,12 @@ func Run(input io.Reader) int {
 
 	// find my starting and end positions
 	start := make([]int, 2)
-	end := make([]int, 2)
 	for i := 0; i < len(grid); i++ {
 		for j := 0; j < len(grid[i]); j++ {
-			if grid[i][j] == 'S' {
-				grid[i][j] = 'a'
-				start[0] = i
-				start[1] = j
-			}
 			if grid[i][j] == 'E' {
 				grid[i][j] = 'z'
-				end[0] = i
-				end[1] = j
+				start[0] = i
+				start[1] = j
 			}
 		}
 	}
@@ -60,7 +54,7 @@ func Run(input io.Reader) int {
 
 	canMove := func(val byte, row, col int) bool {
 		v := grid[row][col]
-		return int(v)-int(val) <= 1 // can climb one, or go down as many as we like; need to change to int() otherwise bytes will overflow
+		return int(val)-int(v) <= 1 // can climb one, or go down as many as we like; need to change to int() otherwise bytes will overflow
 	}
 
 	getAdjacent := func(node []int) [][]int {
@@ -95,9 +89,8 @@ func Run(input io.Reader) int {
 		currPath := path[0]
 		path = path[1:]
 
-		// see if it is our end
-		if v[0] == end[0] && v[1] == end[1] {
-			steps = len(currPath) - 1 // ignore first node
+		if grid[v[0]][v[1]] == 'a' {
+			steps = len(currPath) - 1
 			break
 		}
 
